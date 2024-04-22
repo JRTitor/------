@@ -5,7 +5,7 @@ from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 import os
 import json
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 PATH_ENV = os.path.join(os.getcwd(), 'env.json')
 api_data = json.load(open(PATH_ENV))
@@ -41,21 +41,20 @@ def get_response(sys_prompt:str, complaint:str) -> str:
 def prompt_runner(prompt:str, message_loader:DataLoader):
     return [(message[0], get_response(prompt, message[0])) for message in tqdm(message_loader)]
 
-
 def main():
     prompts_df = pd.read_csv('../prompts/prompts.csv', names=['prompt'])
     message_path = '../messages/negative_mess.csv'
     message_data = message_dataset(message_path)
     message_loader = DataLoader(message_data)
-    
+
     for i in tqdm(range(len(prompts_df))):
         prompt = prompts_df.prompt.iloc[i]
         tmp_list = prompt_runner(prompt, message_loader)
         df_to_save = pd.DataFrame({
-                        "message":tmp_list[0],
-                        "response":tmp_list[1],
+                        "message": [el[0] for el in tmp_list],
+                        "response":[el[1] for el in tmp_list],
                         })
-        df_name = prompt.replace(' ', '_').replace('.', '0') + '.json'
+        df_name = prompt.replace(' ', '_').replace('.', '0') + '.csv'
         df_path = os.path.join('..\\joined', df_name)
         df_to_save.to_csv(df_path)
 
