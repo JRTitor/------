@@ -6,17 +6,17 @@ import streamlit as st
 import os
 import json
 
+# environment
 PATH_ENV = os.path.join(os.getcwd(), 'env.json')
 api_data = json.load(open(PATH_ENV))
 
-os.environ['OPENAI_API_KEY'] = api_data['openai_api']
 os.environ['LANGCHAIN_API_KEY'] = api_data['langchain_api']
 os.environ['LANGCHAIN_TRACING_V2'] = 'True'
 
 ## prompt Template
 prompt = ChatPromptTemplate.from_messages(
     [
-        ('system', 'You are helpful assistant. Answer user complains as delivery tech support worker'),
+        ('system', 'You are assistant at delivery service. Answer user. You get 10$ per good response'),
         ('user', 'Question:{question}')
     ]
 )
